@@ -1,0 +1,21 @@
+﻿ClienteID,Cliente,Segmento,Ciudad,Estado,Region,PlazoCreditoDias
+1,Comercial Aurora,PyME,Tijuana,Baja California,Noroeste,0
+2,Servicios Peninsula,Corporativo,Mexicali,Baja California,Noroeste,15
+3,Grupo Horizonte,Distribuidor,Ensenada,Baja California,Noroeste,30
+4,Distribuidora Pacifico,PyME,Hermosillo,Sonora,Noroeste,45
+5,Oficinas del Norte,Corporativo,Monterrey,Nuevo Leon,Noreste,0
+6,Soluciones Prisma,Distribuidor,Guadalajara,Jalisco,Occidente,15
+7,Comercial Delta,PyME,Ciudad de Mexico,Ciudad de Mexico,Centro,30
+8,Suministros Bahia,Corporativo,Queretaro,Queretaro,Centro,45
+9,Corporativo Encino,Distribuidor,Tijuana,Baja California,Noroeste,0
+10,Negocios Atlas,PyME,Mexicali,Baja California,Noroeste,15
+11,Operadora Valle,Corporativo,Ensenada,Baja California,Noroeste,30
+12,Servicios Alameda,Distribuidor,Hermosillo,Sonora,Noroeste,45
+13,Comercial Brisa,PyME,Monterrey,Nuevo Leon,Noreste,0
+14,Grupo Cobalto,Corporativo,Guadalajara,Jalisco,Occidente,15
+15,Distribuidora Faro,Distribuidor,Ciudad de Mexico,Ciudad de Mexico,Centro,30
+16,Oficinas Loma,PyME,Queretaro,Queretaro,Centro,45
+17,Soluciones Nexo,Corporativo,Tijuana,Baja California,Noroeste,0
+18,Comercial Olivo,Distribuidor,Mexicali,Baja California,Noroeste,15
+19,Grupo Nuevo Sol,PyME,Ensenada,Baja California,Noroeste,30
+20,Servicios Cumbre,Corporativo,Hermosillo,Sonora,Noroeste,45

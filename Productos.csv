@@ -1,0 +1,31 @@
+﻿ProductoID,Producto,Categoria,PrecioLista,CostoReferencia
+1,Teclado USB,Tecnologia,299.00,165.00
+2,Mouse inalambrico,Tecnologia,249.00,135.00
+3,Monitor 24 pulgadas,Tecnologia,2799.00,1900.00
+4,Webcam HD,Tecnologia,699.00,420.00
+5,Audifonos USB,Tecnologia,549.00,310.00
+6,Memoria USB 64 GB,Tecnologia,179.00,95.00
+7,Resma de papel carta,Papeleria,129.00,82.00
+8,Cuaderno profesional,Papeleria,69.00,35.00
+9,Caja de bolígrafos,Papeleria,89.00,47.00
+10,Paquete de carpetas,Papeleria,119.00,62.00
+11,Marcadores pizarron,Papeleria,149.00,80.00
+12,Notas adhesivas,Papeleria,59.00,28.00
+13,Silla operativa,Mobiliario,1899.00,1200.00
+14,Escritorio compacto,Mobiliario,2499.00,1650.00
+15,Archivero dos cajones,Mobiliario,1599.00,1000.00
+16,Mesa plegable,Mobiliario,1299.00,810.00
+17,Repisa metalica,Mobiliario,999.00,620.00
+18,Lampara escritorio,Mobiliario,399.00,220.00
+19,Toner negro,Consumibles,899.00,540.00
+20,Cartucho tinta negra,Consumibles,449.00,260.00
+21,Cartucho tinta color,Consumibles,549.00,320.00
+22,Etiquetas adhesivas,Consumibles,159.00,85.00
+23,Cinta de empaque,Consumibles,49.00,24.00
+24,Rollo papel termico,Consumibles,79.00,40.00
+25,Limpiador multiusos,Limpieza,89.00,45.00
+26,Gel antibacterial,Limpieza,99.00,50.00
+27,Toallas de papel,Limpieza,139.00,76.00
+28,Bolsas para basura,Limpieza,119.00,65.00
+29,Jabon para manos,Limpieza,79.00,39.00
+30,Paños microfibra,Limpieza,129.00,69.00
