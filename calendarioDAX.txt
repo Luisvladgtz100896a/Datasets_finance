@@ -1,0 +1,16 @@
+Calendario =
+VAR FechaMinima = MIN ( Ventas[Fecha] )
+VAR FechaMaxima = MAX ( Ventas[Fecha] )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR (
+            DATE ( YEAR ( FechaMinima ), 1, 1 ),
+            DATE ( YEAR ( FechaMaxima ), 12, 31 )
+        ),
+        "Anio", YEAR ( [Date] ),
+        "MesNumero", MONTH ( [Date] ),
+        "Mes", FORMAT ( [Date], "mmmm", "es-MX" ),
+        "AnioMes", FORMAT ( [Date], "yyyy-MM" ),
+        "AnioMesOrden", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+        "Trimestre", "T" & QUARTER ( [Date] )
+    )
