@@ -1,0 +1,318 @@
+﻿MEDIDAS DAX PARA LA INTRODUCCIÓN A POWER BI EN FINANZAS
+
+Fórmulas utilizadas con Clientes, Productos, Ventas y Calendario del caso práctico.
+Importes en MXN antes de impuestos.
+
+CÓMO USAR ESTE ARCHIVO
+- Crea la columna del apartado A en la tabla Ventas.
+- Después crea cada medida del apartado B por separado, en Modelado > Nueva medida.
+- Copia únicamente la fórmula, desde su nombre hasta el final de la expresión.
+- Si una medida ya existe, puedes revisar su definición en lugar de crearla otra vez.
+- Las medidas se evalúan según los filtros del reporte.
+- Los ejemplos de ventas y margen tienen variantes equivalentes para comparar.
+- Aplica moneda a importes, enteros a conteos y porcentaje a los márgenes.
+
+Relaciones activas utilizadas (1 a muchos, desde la dimensión hacia Ventas):
+Clientes[ClienteID]   -> Ventas[ClienteID]
+Productos[ProductoID] -> Ventas[ProductoID]
+Calendario[Date]     -> Ventas[Fecha]
+
+A. COLUMNA PREVIA PARA LA VERSIÓN DE VENTAS CON SUM
+
+ImporteNeto: COLUMNA CALCULADA en Ventas.
+Calcula y redondea a dos decimales el importe de cada movimiento, después del
+descuento. DescuentoPct almacena 0.15 para representar un descuento de 15%.
+
+ImporteNeto =
+ROUND (
+    Ventas[Cantidad]
+        * Ventas[PrecioUnitario]
+        * ( 1 - Ventas[DescuentoPct] ),
+    2
+)
+
+
+B. MEDIDAS: CREAR CADA UNA POR SEPARADO
+
+01. UNIDADES
+Suma las cantidades de los movimientos incluidos en el contexto actual.
+Función principal: SUM.
+
+Unidades =
+SUM ( Ventas[Cantidad] )
+
+
+02. RENGLONES
+Cuenta los registros de Ventas incluidos en el cálculo. Una factura puede
+ocupar varios renglones.
+Función principal: COUNTROWS.
+
+Renglones =
+COUNTROWS ( Ventas )
+
+
+03. FACTURAS
+Cuenta los identificadores de factura diferentes dentro del contexto actual.
+Función principal: DISTINCTCOUNT.
+
+Facturas =
+DISTINCTCOUNT ( Ventas[FacturaID] )
+
+
+04. CLIENTES COMPRADORES
+Cuenta los identificadores de cliente distintos presentes en Ventas.
+Permite distinguir compradores de clientes registrados en el catálogo.
+Función principal: DISTINCTCOUNT.
+
+Clientes compradores =
+DISTINCTCOUNT ( Ventas[ClienteID] )
+
+
+05. PROMEDIO DE UNIDADES POR RENGLÓN
+Calcula la media aritmética de Cantidad en los movimientos incluidos.
+Representa unidades por renglón, no unidades por factura.
+AVERAGE incluye ceros e ignora valores en blanco.
+
+Promedio unidades por renglon =
+AVERAGE ( Ventas[Cantidad] )
+
+
+06. VENTAS BRUTAS
+Multiplica cantidad por precio unitario en cada movimiento y suma los
+resultados. Representa las ventas antes de descuentos.
+Función principal: SUMX.
+
+Ventas brutas =
+SUMX (
+    Ventas,
+    Ventas[Cantidad] * Ventas[PrecioUnitario]
+)
+
+
+07. VENTAS NETAS CON SUM
+Suma la columna ImporteNeto creada en el apartado A.
+Esta versión sirve para enseñar la combinación columna calculada + medida.
+
+Ventas netas =
+SUM ( Ventas[ImporteNeto] )
+
+
+08. VENTAS NETAS CON SUMX
+Calcula el importe después del descuento para cada movimiento, lo redondea
+y suma los resultados directamente. No necesita la columna ImporteNeto.
+Debe coincidir con Ventas netas: es una alternativa, no un ingreso adicional.
+
+Ventas netas SUMX =
+SUMX (
+    Ventas,
+    ROUND (
+        Ventas[Cantidad]
+            * Ventas[PrecioUnitario]
+            * ( 1 - Ventas[DescuentoPct] ),
+        2
+    )
+)
+
+
+09. COSTO DE VENTAS
+Multiplica cantidad por costo unitario histórico de cada movimiento y suma
+los resultados. Utiliza Ventas[CostoUnitario], no el costo de referencia
+actual del catálogo de productos.
+
+Costo de ventas =
+SUMX (
+    Ventas,
+    Ventas[Cantidad] * Ventas[CostoUnitario]
+)
+
+
+10. UTILIDAD BRUTA
+Resta el costo de ventas a las ventas netas. Reutiliza dos medidas existentes.
+
+Utilidad bruta =
+[Ventas netas] - [Costo de ventas]
+
+
+11. MARGEN BRUTO
+Divide la utilidad bruta entre las ventas netas.
+En el total utiliza los importes totales; no promedia los márgenes individuales.
+DIVIDE devuelve BLANK cuando el denominador es cero si no se indica alternativa.
+Formato recomendado: porcentaje, con dos decimales.
+
+Margen bruto % =
+DIVIDE ( [Utilidad bruta], [Ventas netas] )
+
+
+12. MARGEN BRUTO CON VARIABLES Y RETURN
+Variante equivalente a Margen bruto %, con resultados intermedios nombrados.
+VAR define cada variable y RETURN indica el resultado final de la expresión.
+Las variables conservan su valor dentro de esa evaluación; cuando cambia el
+contexto del reporte, la medida vuelve a evaluarse.
+Formato recomendado: porcentaje, con dos decimales.
+
+Margen bruto con variables % =
+VAR ImporteVentas = [Ventas netas]
+VAR ImporteCostos = [Costo de ventas]
+VAR Utilidad = ImporteVentas - ImporteCostos
+RETURN
+    DIVIDE ( Utilidad, ImporteVentas )
+
+
+13. TICKET PROMEDIO
+Divide las ventas netas entre el número de facturas diferentes.
+Es el importe neto promedio por factura.
+
+Ticket promedio =
+DIVIDE ( [Ventas netas], [Facturas] )
+
+
+14. VENTAS DE TECNOLOGÍA
+Evalúa las ventas netas aplicando la categoría "Tecnologia".
+Conserva otros filtros, como fecha o cliente. Si ya existe un filtro sobre
+Productos[Categoria], esta condición lo sustituye.
+El texto "Tecnologia" coincide con el valor del CSV.
+
+Ventas tecnologia =
+CALCULATE (
+    [Ventas netas],
+    Productos[Categoria] = "Tecnologia"
+)
+
+
+15. PRECIO MÁXIMO
+Devuelve el mayor precio unitario registrado en los movimientos incluidos.
+MAX corresponde cuando la pregunta de negocio requiere el valor mayor.
+
+Precio maximo =
+MAX ( Ventas[PrecioUnitario] )
+
+
+16. CLIENTE VISIBLE
+Devuelve el nombre cuando hay exactamente un nombre de cliente distinto
+en el contexto. Con cero o varios valores devuelve el texto alternativo.
+Puedes demostrarlo con un segmentador basado en Clientes[Cliente].
+
+Cliente visible =
+SELECTEDVALUE (
+    Clientes[Cliente],
+    "Varios clientes o ninguno"
+)
+
+
+C. COLUMNAS ADICIONALES PARA DEMOSTRAR RELATED Y LOOKUPVALUE
+
+Estos dos ejemplos son COLUMNAS CALCULADAS en Ventas.
+Son alternativas para recuperar la categoría. Para un gráfico también puedes
+utilizar directamente Productos[Categoria], mediante la relación del modelo.
+
+C1. CATEGORÍA MEDIANTE RELATED
+Recupera la categoría del producto correspondiente al movimiento actual.
+Requiere la relación entre Ventas[ProductoID] y Productos[ProductoID].
+
+CategoriaProducto =
+RELATED ( Productos[Categoria] )
+
+
+C2. CATEGORÍA MEDIANTE LOOKUPVALUE
+Busca la categoría haciendo coincidir el ProductoID del movimiento con el
+ProductoID del catálogo. La clave debe identificar el producto inequívocamente.
+
+CategoriaPorBusqueda =
+LOOKUPVALUE (
+    Productos[Categoria],
+    Productos[ProductoID], Ventas[ProductoID]
+)
+
+
+D. RECORDATORIOS PARA EXPLICAR LAS FÓRMULAS
+
+- Columna calculada en modo Importar:
+  calcula y almacena un valor por registro al crearla y al actualizar/procesar
+  el modelo. Los filtros cambian las filas visibles, no sus valores almacenados.
+
+- Medida:
+  calcula un resultado para cada contexto solicitado por el reporte.
+  Es la opción habitual para ventas, costos, utilidad, margen y otros KPI.
+
+- Contexto de fila:
+  identifica el registro actual de una expresión. Existe en las columnas
+  calculadas y durante el recorrido de un iterador como SUMX.
+
+- Contexto de filtro:
+  delimita los registros que participan en el cálculo. Puede proceder de
+  segmentadores, filtros, campos de los visuales y relaciones del modelo.
+
+- SUM frente a SUMX:
+  SUM suma una columna. SUMX evalúa una expresión por cada fila de una tabla
+  y después suma los resultados, respetando el contexto de filtro.
+
+- Referencias:
+  Ventas[Cantidad] es una columna.
+  [Ventas netas] es una medida.
+  ImporteVentas es una variable local, escrita sin corchetes.
+
+- MAX y el autocompletado:
+  Que un campo no aparezca entre las sugerencias no significa que debas usar
+  MAX. Revisa el nombre y qué argumento espera la función. En una medida,
+  define qué resultado necesitas: suma, promedio, máximo o valor único.
+  Para multiplicar cantidad por precio en cada movimiento y sumar importes,
+  utiliza el patrón SUMX. Multiplicar los máximos podría combinar valores
+  procedentes de movimientos diferentes.
+
+
+E. RESULTADOS ESPERADOS SIN FILTROS
+
+Datos del ejercicio: 1,200 renglones, 480 facturas, 20 clientes del catálogo
+y 30 productos. Dos clientes del catálogo no tienen compras.
+
+Unidades:                         5,476
+Renglones:                        1,200
+Facturas:                         480
+Clientes compradores:             18
+Promedio unidades por renglon:    4.5633
+Ventas brutas:                    $3,041,194.00
+Ventas netas:                     $2,856,263.15
+Ventas netas SUMX:                $2,856,263.15
+Costo de ventas:                  $1,863,809.00
+Utilidad bruta:                   $992,454.15
+Margen bruto %:                   34.7466% (34.75% con dos decimales)
+Margen bruto con variables %:     34.7466% (34.75% con dos decimales)
+Ticket promedio:                 $5,950.55
+
+No sumes entre sí las dos variantes de ventas ni los dos márgenes:
+son cálculos equivalentes preparados para la demostración.
+
+
+F. COMPROBACIÓN CON LA FACTURA F0001
+
+Limpia las selecciones previas y aplica Ventas[FacturaID] = F0001 como
+filtro de página. Comprueba los indicadores siguientes:
+
+Renglones:                        2
+Facturas:                         1
+Unidades:                         3
+Ventas netas:                     $957.95
+Costo de ventas:                  $685.00
+Utilidad bruta:                   $272.95
+Margen bruto %:                   28.49%
+
+Quita el filtro de factura al terminar.
+
+
+REFERENCIAS DE MICROSOFT PARA REPASAR
+
+Medidas y columnas:
+https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-calculations-options
+
+SUMX:
+https://learn.microsoft.com/en-us/dax/sumx-function-dax
+
+CALCULATE:
+https://learn.microsoft.com/en-us/dax/calculate-function-dax
+
+Variables:
+https://learn.microsoft.com/en-us/dax/var-dax
+
+SELECTEDVALUE:
+https://learn.microsoft.com/en-us/dax/selectedvalue-function-dax
+
